@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Mirrored from twerkingduck.fun/ by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 21 Jun 2025 03:00:58 GMT -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> booty poppin ducky $bpd</title>
+      <link rel="icon" type="image/x-icon" href="img/favicon.png">
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+            background-color: black;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Neon purple text styling */
+        body, #score, #casualty-popup {
+            color: #a020f0; /* Neon purple base color */
+            text-shadow: 
+                0 0 5px #ff00ff, 
+                0 0 10px #ff00ff, 
+                0 0 20px #a020f0, 
+                0 0 30px #ff00ff, 
+                0 0 40px #a020f0, 
+                0 0 50px #ff00ff, 
+                0 0 75px #ff00ff;
+        }
+
+        /* Background video styling */
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        /* Neon background GIF styling */
+        #neon-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('img/neon.gif') no-repeat center center;
+            background-size: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            z-index: -1;
+        }
+
+        /* Start screen styling */
+        #start-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            color: #fff;
+            font-size: 30px;
+            text-align: center;
+        }
+
+        /* Car styling */
+        #car {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 450px;
+            pointer-events: none;
+        }
+
+        /* Casualties counter */
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 32px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        /* Duck styling */
+        .duck {
+            position: absolute;
+            top: -100px;
+            width: 50px;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                top: 100vh;
+            }
+        }
+
+        /* Popup for casualties milestone */
+        #casualty-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 72px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            z-index: 20;
+        }
+
+        #top-links {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            font-size: 20px;
+        }
+
+        #top-links a {
+            text-decoration: none;
+            color: #fff;
+        }
+
+        /* Egg click styling */
+        #egg-to-click {
+            width: 150px; /* Reasonable size for the egg */
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Background video -->
+    <video id="bg-video" autoplay loop muted>
+        <source src="img/bgvid.mp4" type="video/mp4">
+        <source src="img/bgvid.html" type="video/webm">
+        <source src="img/bgvid-2.html" type="video/ogg">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Neon background effect (hidden initially) -->
+    <div id="neon-background"></div>
+
+    <!-- Score display -->
+    <div id="score">Casualties: 0</div>
+
+    <!-- Neon display for casualties milestone -->
+    <div id="casualty-popup"></div>
+
+    <!-- Car image -->
+    <img id="car" src="img/car.gif" alt="Car">
+
+    <!-- Audio player for background song (with multiple formats for compatibility) -->
+    <audio id="background-music" loop>
+        <source src="img/song.mp3" type="audio/mpeg">
+        <source src="img/song.html" type="audio/ogg">
+        <source src="img/song-2.html" type="audio/wav">
+        Your browser does not support the audio tag.
+    </audio>
+
+    <!-- Audio player for duck sound -->
+    <audio id="duck-sound">
+        <source src="img/ducksound.mp3" type="audio/mpeg">
+        <source src="img/ducksound.html" type="audio/ogg">
+        Your browser does not support the audio tag.
+    </audio>
+
+    <!-- Egg image to click (only visible on start screen) -->
+    <div id="start-screen">
+        <div>
+            <p>Click the egg to start, degen.</p>
+            <img id="egg-to-click" src="img/egg.png" alt="Click the Egg">
+        </div>
+            <div id="top-links">
+    </div>
+    </div>
+
+    <div id="top-links">
+        <a href="" target="_blank">pump.fun</a>
+        <a href="https://x.com/i/communities/1936258337122680848/" target="_blank">x community</a>
+    </div>
+
+    <script>
+        const car = document.getElementById('car');
+        const body = document.body;
+        const scoreElement = document.getElementById('score');
+        const neonBackground = document.getElementById('neon-background');
+        const casualtyPopup = document.getElementById('casualty-popup');
+        const backgroundMusic = document.getElementById('background-music');
+        const duckSound = document.getElementById('duck-sound');
+        const startScreen = document.getElementById('start-screen');
+        const eggToClick = document.getElementById('egg-to-click');
+        let casualties = 0;
+        let backgroundEffectActive = false;
+        let currentNeon = 'neon';
+
+        // Reduce the background music volume
+        backgroundMusic.volume = 0.3;
+
+        // Wait for user to click the egg to start the game
+        eggToClick.addEventListener('click', () => {
+    // Change the egg image to twerk.gif immediately upon click
+    eggToClick.src = 'img/twerk.gif';  
+    eggToClick.style.pointerEvents = 'none';
+
+
+    // Play the sound
+    const eggSound = new Audio('img/shit.mp3');
+    eggSound.play();
+
+    // Start background music after sound ends
+    eggSound.onended = () => {
+        // Start the background music
+        backgroundMusic.play();
+
+        // Hide the start screen
+        startScreen.style.display = 'none';
+
+        // Initialize the game
+        startGame();
+    };
+});
+
+
+        function startGame() {
+            body.addEventListener('mousemove', (event) => {
+                const mouseX = event.clientX;
+                car.style.left = `${mouseX}px`;
+            });
+
+            // Function to create a falling duck
+            function createDuck() {
+                const duck = document.createElement('img');
+                duck.src = 'img/fall.gif';
+                duck.className = 'duck';
+
+                const randomX = Math.random() * window.innerWidth;
+                duck.style.left = `${randomX}px`;
+                body.appendChild(duck);
+
+                const fallDuration = Math.random() * 3 + 1;
+                duck.style.animationDuration = `${fallDuration}s`;
+
+                const interval = setInterval(() => {
+                    const duckRect = duck.getBoundingClientRect();
+                    const carRect = car.getBoundingClientRect();
+
+                    if (
+                        duckRect.bottom >= carRect.top &&
+                        duckRect.left <= carRect.right &&
+                        duckRect.right >= carRect.left
+                    ) {
+                        body.removeChild(duck);
+                        casualties++;
+                        playDuckSound();
+                        updateScore();
+                        clearInterval(interval);
+                    }
+
+                    if (duckRect.top > window.innerHeight) {
+                        body.removeChild(duck);
+                        clearInterval(interval);
+                    }
+                }, 50);
+            }
+
+            function playDuckSound() {
+                duckSound.currentTime = 0;
+                duckSound.play();
+            }
+
+            function updateScore() {
+                scoreElement.textContent = `Casualties: ${casualties}`;
+                if (casualties % 10 === 0) {
+                    showCasualtyPopup();
+                    triggerNeonBackground();
+                }
+            }
+
+            function showCasualtyPopup() {
+                casualtyPopup.textContent = `Casualties: ${casualties}`;
+                casualtyPopup.style.opacity = 1;
+                casualtyPopup.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                setTimeout(() => {
+                    casualtyPopup.style.opacity = 0;
+                    casualtyPopup.style.transform = 'translate(-50%, -50%) scale(1)';
+                }, 2000);
+            }
+
+            function triggerNeonBackground() {
+                if (!backgroundEffectActive) {
+                    backgroundEffectActive = true;
+                    if (currentNeon === 'neon') {
+                        neonBackground.style.backgroundImage = "url('img/neon.gif')";
+                        currentNeon = 'neon2';
+                    } else {
+                        neonBackground.style.backgroundImage = "url('img/neon2.gif')";
+                        currentNeon = 'neon';
+                    }
+
+                    neonBackground.style.opacity = 1;
+
+                    setTimeout(() => {
+                        neonBackground.style.opacity = 0;
+                        backgroundEffectActive = false;
+                    }, 3000);
+                }
+            }
+
+            // Generate a new duck every 1.5 seconds
+            setInterval(createDuck, 1200);
+        }
+    </script>
+</body>
+
+<!-- Mirrored from twerkingduck.fun/ by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 21 Jun 2025 03:01:11 GMT -->
+</html>
